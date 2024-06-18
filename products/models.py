@@ -4,6 +4,9 @@ from django_extensions.db.fields import AutoSlugField
 class Image(models.Model):
     link=models.CharField(max_length=50)
 
+class Datasheet(models.Model):
+    link=models.CharField(max_length=50)
+
 class Brand(models.Model):
     slug = AutoSlugField(populate_from=['name'],max_length=50)
     name = models.CharField(max_length=35)
@@ -14,14 +17,14 @@ class Category(models.Model):
     img=models.ForeignKey(Image,on_delete=models.CASCADE)
 
 class Product(models.Model):
-    slug = AutoSlugField(populate_from=['name'],max_length=50)
+    slug = AutoSlugField(populate_from=['name'],max_length=30)
     brand=models.ForeignKey(Brand,on_delete=models.CASCADE)
-    features=models.CharField(max_length=500)
+    features=models.CharField(max_length=1000)
     name = models.CharField(max_length=35)
     category=models.ForeignKey(Category,on_delete=models.CASCADE)
     quantity=models.IntegerField()
     top_featured=models.BooleanField()
-    datasheet=models.CharField(max_length=50)
+    datasheet=models.ForeignKey(Datasheet,on_delete=models.CASCADE)
 
 class Banner(models.Model):
     product=models.ForeignKey(Product,models.SET_NULL,blank=True,null=True)
