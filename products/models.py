@@ -9,18 +9,18 @@ class Datasheet(models.Model):
 
 class Brand(models.Model):
     slug = AutoSlugField(populate_from=['name'],max_length=50)
-    name = models.CharField(max_length=35)
+    name = models.CharField(max_length=50)
     img=models.ForeignKey(Image,on_delete=models.CASCADE)
     
 class Category(models.Model):
-    name = models.CharField(max_length=35)
+    name = models.CharField(max_length=50)
     img=models.ForeignKey(Image,on_delete=models.CASCADE)
 
 class Product(models.Model):
     slug = AutoSlugField(populate_from=['name'],max_length=30)
     brand=models.ForeignKey(Brand,on_delete=models.CASCADE)
-    features=models.CharField(max_length=1000)
-    name = models.CharField(max_length=35)
+    features=models.CharField(max_length=1500)
+    name = models.CharField(max_length=150)
     category=models.ForeignKey(Category,on_delete=models.CASCADE)
     quantity=models.IntegerField()
     top_featured=models.BooleanField()

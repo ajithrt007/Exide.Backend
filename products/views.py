@@ -6,6 +6,7 @@ from .serializers import ImageSerializer, CategorySerializer, BrandSerializer, P
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Category, Brand, Product
+from .helpers import remove_special_characters
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -23,7 +24,8 @@ def addCategory(request):
     if not os.path.exists(brand_dir):
         os.makedirs(brand_dir)
 
-    image_name='_'.join(category_name.split(' ')) + '.' + image.name.split('.')[-1]
+    filtered_category_name=remove_special_characters(category_name)
+    image_name='_'.join(filtered_category_name.split(' ')) + '.' + image.name.split('.')[-1]
 
     with open(os.path.join(brand_dir,image_name), 'wb+') as destination:
         for chunk in image.chunks():
@@ -67,7 +69,8 @@ def addBrand(request):
     if not os.path.exists(brand_dir):
         os.makedirs(brand_dir)
 
-    image_name='_'.join(brand_name.split(' ')) + '.' + image.name.split('.')[-1]
+    filtered_brand_name=remove_special_characters(brand_name)
+    image_name='_'.join(filtered_brand_name.split(' ')) + '.' + image.name.split('.')[-1]
 
     with open(os.path.join(brand_dir,image_name), 'wb+') as destination:
         for chunk in image.chunks():
@@ -111,7 +114,8 @@ def addProduct(request):
     if not datasheet:
         return Response("Datasheet is empty.",status=status.HTTP_400_BAD_REQUEST)
     
-    pdf_name=f"{'_'.join(product_name.split(' '))}.pdf"
+    filtered_product_name=remove_special_characters(product_name)
+    pdf_name=f"{'_'.join(filtered_product_name.split(' '))}.pdf"
 
     datasheets_dir=os.path.join(settings.MEDIA_ROOT,'datasheets')
     if not os.path.exists(datasheets_dir):
@@ -197,7 +201,7 @@ def addBanner(request):
     banner_dir= os.path.join(settings.MEDIA_ROOT,'banners')
     if not os.path.exists(banner_dir):
         os.makedirs(banner_dir)
-
+    
     image_name= f"{product_id}Banner.{image.name.split('.')[-1]}"
 
     with open(os.path.join(banner_dir,image_name), 'wb+') as destination:
