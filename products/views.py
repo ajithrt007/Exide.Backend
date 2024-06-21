@@ -6,7 +6,8 @@ from .serializers import ImageSerializer, CategorySerializer, BrandSerializer, P
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Category, Brand, Product
-from .helpers import remove_special_characters
+from .helpers import custom_slugify
+from django.utils.text import slugify
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -24,7 +25,7 @@ def addCategory(request):
     if not os.path.exists(brand_dir):
         os.makedirs(brand_dir)
 
-    filtered_category_name=remove_special_characters(category_name)
+    filtered_category_name=custom_slugify(category_name)
     image_name='_'.join(filtered_category_name.split(' ')) + '.' + image.name.split('.')[-1]
 
     with open(os.path.join(brand_dir,image_name), 'wb+') as destination:
@@ -69,7 +70,7 @@ def addBrand(request):
     if not os.path.exists(brand_dir):
         os.makedirs(brand_dir)
 
-    filtered_brand_name=remove_special_characters(brand_name)
+    filtered_brand_name=custom_slugify(brand_name)
     image_name='_'.join(filtered_brand_name.split(' ')) + '.' + image.name.split('.')[-1]
 
     with open(os.path.join(brand_dir,image_name), 'wb+') as destination:
@@ -114,7 +115,7 @@ def addProduct(request):
     if not datasheet:
         return Response("Datasheet is empty.",status=status.HTTP_400_BAD_REQUEST)
     
-    filtered_product_name=remove_special_characters(product_name)
+    filtered_product_name=custom_slugify(product_name)
     pdf_name=f"{'_'.join(filtered_product_name.split(' '))}.pdf"
 
     datasheets_dir=os.path.join(settings.MEDIA_ROOT,'datasheets')

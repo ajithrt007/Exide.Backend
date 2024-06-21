@@ -1,5 +1,7 @@
-import re
+from django.utils.text import slugify
 
-def remove_special_characters(input_string:str) -> str:
-    cleaned_string = re.sub(r'[^a-zA-Z0-9_]', '', input_string)
-    return cleaned_string
+def custom_slugify(value, max_length=30):
+    slug = slugify(value)
+    if len(slug) > max_length:
+        return slug[:max_length]
+    return slug

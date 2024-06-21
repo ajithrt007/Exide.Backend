@@ -5,7 +5,7 @@ class Image(models.Model):
     link=models.CharField(max_length=50)
 
 class Datasheet(models.Model):
-    link=models.CharField(max_length=50)
+    link=models.CharField(max_length=60)
 
 class Brand(models.Model):
     slug = AutoSlugField(populate_from=['name'],max_length=50)
