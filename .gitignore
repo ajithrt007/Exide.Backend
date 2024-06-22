@@ -1,6 +1,6 @@
 # Ignore everything inside the 'media' folder
-media/*
-# But don't ignore the 'media' folder itself
-!media/
+# media/*
+# # But don't ignore the 'media' folder itself
+# !media/
 
 venv/*
