@@ -31,15 +31,35 @@ def postMessage(request):
 
     query_serializer.save()
     return Response({'message': 'Message posted successfully'}, status=status.HTTP_201_CREATED)
-        
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def readUnreadMessage(request):
+    msg_id=request.data.get('id')
+
+    if not msg_id:
+        return Response({'error': 'Message ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        message = Query.objects.get(id=msg_id)
+    except Query.DoesNotExist:
+        return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    message.answered = True
+    message.save()
+
+    return Response({'message': 'Message status updated to answered'}, status=status.HTTP_200_OK)
+    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getUnreadMessages(request):
     unread_messages=list(Query.objects.filter(answered=False))
-    return Response(unread_messages, status=status.HTTP_200_OK)
+    serializer=QuerySerializer(unread_messages,many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getReadMessages(request):
     read_messages=list(Query.objects.filter(answered=True))
-    return Response(read_messages, status=status.HTTP_200_OK)
+    serializer=QuerySerializer(read_messages,many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
