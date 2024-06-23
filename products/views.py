@@ -2,12 +2,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 import os
 from django.conf import settings
-from .serializers import ImageSerializer, CategorySerializer, BrandSerializer, ProductSerializer, DatasheetSerializer, ProductImageSerializer, BannerSerializer
+from .serializers import ImageSerializer, CategorySerializer, BrandSerializer, ProductSerializer, DatasheetSerializer, ProductImageSerializer, BannerSerializer, ProductsQuerySerializer,ProductOutputSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Category, Brand, Product
+from .models import Category, Brand, Product, Banner, Image, ProductImage
 from .helpers import custom_slugify
-from django.utils.text import slugify
+from django.db.models import Q
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -167,7 +167,7 @@ def addProduct(request):
         image_name=f"{slugValue}_{i}.{image.name.split('.')[-1]}"
 
         with open(os.path.join(products_dir,image_name),'wb+') as destination:
-            for chunk in datasheet.chunks():
+            for chunk in image.chunks():
                 destination.write(chunk)
 
         image_serializer = ImageSerializer(data={'link': image_name})
@@ -252,5 +252,119 @@ def getProductsNames(request):
 def getProducts(request):
     products=list(Product.objects.values('id','name'))
     return Response(products, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getProductsAll(request):
+    products_query_serializer=ProductsQuerySerializer(data=request.query_params)
+    if not products_query_serializer.is_valid():
+        return Response(products_query_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    brand_name=products_query_serializer.validated_data.get('brand')
+    if brand_name is not None:
+        brand=list(Brand.objects.filter(name=brand_name).values('id'))
+        brand_id=brand['id']
+        query=Q(brand=brand_id)
+
+    category_name=products_query_serializer.validated_data.get('category')
+    if category_name is not None:
+        category=list(Category.objects.filter(name=category_name).values('id'))
+        category_id=category['id']
+        query&=Q(category=category_id)
+
+    search_string=products_query_serializer.validated_data.get('product_name')
+    if search_string is not None:
+        query&=Q(name__istartswith=search_string)
+
+    try:
+        filtered_queryset=Product.objects.filter(query)
+    except Exception as  e:
+        return Response({'error': str(e)})
+    
+    page_size=products_query_serializer.validated_data.get('page_size')
+    page_no=products_query_serializer.validated_data.get('page_no')
+    
+    start_index = page_no * page_size
+    end_index = start_index + page_size
+
+    try:
+        if end_index>filtered_queryset.count():
+            paginated_queryset=filtered_queryset[start_index:]
+        else:
+            paginated_queryset=filtered_queryset[start_index:end_index]
+    except IndexError:
+        print("List Index out of range")
+
+    response=ProductOutputSerializer(paginated_queryset,many=True)
+
+    return Response({"response": response.data, "count": paginated_queryset.count(), "total": filtered_queryset.count()})
+
+@api_view(['GET'])
+def loadHomePage(request):
+    banners=list(Banner.objects.all())
+    banner_results=[]
+
+    for item in banners:
+        slug=list(Product.objects.filter(id=item.product.id).values('slug'))
+        img_name=list(Image.objects.filter(id=item.img.id).values('link'))
+
+        img_location=os.path.join(settings.MEDIA_ROOT,"banners",img_name[0]['link'])
+        if os.path.exists(img_location):
+            img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"banners/"+img_name[0]['link'])
+        else:
+            img_path=""
+        result = {
+            "img_path":img_path,
+            "linked_product_slug": slug[0]['slug']
+        }
+        banner_results.append(result)
+
+    brands=list(Brand.objects.all())
+    brand_results=[]
+
+    for item in brands:
+        img_name=list(Image.objects.filter(id=item.img.id).values('link'))
+        img_location=os.path.join(settings.MEDIA_ROOT,"brand",img_name[0]['link'])
+
+        if os.path.exists(img_location):
+            img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"brand/"+img_name[0]['link'])
+        else:
+            img_path=""
+
+        result={
+            "name": item.name,
+            "img_path": img_path,
+        }
+        brand_results.append(result)
+
+    products=list(Product.objects.filter(top_featured=True).values('slug','name','id'))
+    product_results=[]
+
+    for item in products:
+        img_ids=list(ProductImage.objects.filter(product=item['id']).values('img'))
+        image_names=[]
+
+        for img_id in img_ids:
+            img_name=list(Image.objects.filter(id=img_id['img']).values('link'))
+            img_location=os.path.join(settings.MEDIA_ROOT,"products",img_name[0]['link'])
+
+            if os.path.exists(img_location):
+                img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"products/"+img_name[0]['link'])
+            else:
+                img_path=""
+
+            image_names.append(img_path)
+
+        result={
+            "name": item['name'],
+            "slug": item['slug'],
+            "img_paths": image_names,
+        }
+        product_results.append(result)
         
+    results={
+        "banners": banner_results,
+        "brands": brand_results,
+        "products": product_results
+    }
+
+    return Response(results, status=status.HTTP_200_OK)

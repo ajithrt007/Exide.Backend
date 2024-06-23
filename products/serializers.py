@@ -35,3 +35,16 @@ class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
         fields = ['product','img']
+
+class ProductsQuerySerializer(serializers.Serializer):
+    brand=serializers.CharField(required=False)
+    category=serializers.CharField(required=False)
+    product_name=serializers.CharField(required=False)
+    page_size=serializers.IntegerField(required=False, default=20, max_value=50)
+    page_no=serializers.IntegerField(required=False,default=0)
+
+
+class ProductOutputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = "__all__"
