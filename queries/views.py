@@ -6,8 +6,10 @@ import datetime
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import Query
+from .decorators import limit_post_submissions
 
 @api_view(['POST'])
+@limit_post_submissions(rate_limit=5, time_window=3600)
 def postMessage(request):
     name=request.data.get('name')
     email=request.data.get('email')
