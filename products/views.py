@@ -8,6 +8,7 @@ from rest_framework import status
 from .models import Category, Brand, Product, Banner, Image, ProductImage
 from .helpers import custom_slugify
 from django.db.models import Q
+import json
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -368,3 +369,70 @@ def loadHomePage(request):
     }
 
     return Response(results, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def getAllProducts(requesst):
+    products  = Product.objects.select_related("image_id").all().values()
+   
+    catogories = Category.objects.all().values()
+    brands = Brand.objects.all().values()
+    print(type(products))
+    
+    data = {
+        "products": list(products),
+        "catogories": list(catogories),
+        "brands": list(brands)
+    }
+    
+    # return Response( json.dumps(list(products)) , status = status.HTTP_200_OK)
+    return Response( data , status = status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def updateProducts(request):
+    data = json.loads(request.body).get("body")
+    print(data)
+    product  = Product.objects.get(id=data.get("id"))
+    print(product)
+    product.name = data.get("name")
+    product.slug = data.get("slug")
+    product.features = data.get("features")
+    product.brand_id = data.get("brand_id")
+    product.category_id = data.get("category_id")
+
+    product.save()
+
+    return Response( "" , status = status.HTTP_200_OK)
+
+
+
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def updateCategories(request):
+    data = json.loads(request.body).get("body")
+    print(data)
+    cat  = Category.objects.get(id=data.get("id"))
+    print(cat)
+    cat.name = data.get("name")
+
+    cat.save()
+
+    return Response( "" , status = status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def updateBrand(request):
+    data = json.loads(request.body).get("body")
+    print(data)
+    brand  = Brand.objects.get(id=data.get("id"))
+    print(brand)
+    brand.name = data.get("name")
+    brand.slug = data.get("slug")
+
+    brand.save()
+
+    return Response( "" , status = status.HTTP_200_OK)
