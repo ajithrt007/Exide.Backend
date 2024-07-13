@@ -10,6 +10,12 @@ from .helpers import custom_slugify
 from django.db.models import Q
 import json
 
+
+def handle_uploaded_file(file , output):
+    with open(output, 'wb+') as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def addCategory(request):
@@ -376,14 +382,21 @@ def loadHomePage(request):
 def getAllProducts(requesst):
     products  = Product.objects.select_related("image_id").all().values()
    
-    catogories = Category.objects.all().values()
-    brands = Brand.objects.all().values()
+    catogories = Category.objects.select_related("img")
+    banners = Banner.objects.select_related("img__link").values("id", "product_id", "product_id__name", "img_id" , "img_id__link")
+    for item in catogories:
+        print(item)
+    print(catogories)
+    catogories = Category.objects.select_related("img").values("id", "name", "img", "img__link")
+    print(catogories)
+    brands = Brand.objects.select_related("img_id").all().values("id","slug", "name", "img_id" , "img_id__link")
     print(type(products))
     
     data = {
         "products": list(products),
         "catogories": list(catogories),
-        "brands": list(brands)
+        "brands": list(brands),
+        "banners": list(banners)
     }
     
     # return Response( json.dumps(list(products)) , status = status.HTTP_200_OK)
@@ -393,17 +406,29 @@ def getAllProducts(requesst):
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def updateProducts(request):
-    data = json.loads(request.body).get("body")
+    data = request.POST
     print(data)
-    product  = Product.objects.get(id=data.get("id"))
+    print(request.FILES)
+    print(type(data))
+    product  = Product.objects.get(id=int(data.get("id")[0]))
     print(product)
-    product.name = data.get("name")
-    product.slug = data.get("slug")
-    product.features = data.get("features")
-    product.brand_id = data.get("brand_id")
-    product.category_id = data.get("category_id")
+    product.name = data.get("product_name")
+    # product.slug = data.get("product_slug")
+    product.features = data.get("product_features")
+    product.brand_id = int(data.get("brand_id"))
+    product.category_id = int(data.get("category_id"))
 
     product.save()
+
+    
+    image = request.FILES.get("image")
+    if image is not None:
+        print("chaning image")
+        handle_uploaded_file(image , f"./media/products/{product.slug}_0.png")
+        
+    
+
+    
 
     return Response( "" , status = status.HTTP_200_OK)
 
@@ -412,27 +437,84 @@ def updateProducts(request):
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def updateCategories(request):
-    data = json.loads(request.body).get("body")
-    print(data)
-    cat  = Category.objects.get(id=data.get("id"))
+    data = request.POST
+    print("the data is",data)
+    cat  = Category.objects.select_related("img").get(id=data.get("id"))
     print(cat)
-    cat.name = data.get("name")
+    cat.name = data.get("category_name")
 
+    image_link = cat.img.link
+
+    print(image_link)
+
+    image = request.FILES.get("image")
     cat.save()
+    if image is not None:
+        handle_uploaded_file(image , f"./media/category/{image_link}")
+    
+
+    
 
     return Response( "" , status = status.HTTP_200_OK)
+
+@api_view(['POST'])
+def updateBanners(request):
+    data = request.POST 
+
+    banner = Banner.objects.select_related('img').get( id = data.get('id'))
+    banner.product_id = data.get("product_id")
+
+    
+
+    banner.save()
+    image = request.FILES.get("image")
+    
+
+    if image is not None:
+        handle_uploaded_file(image , f"./media/banners/{banner.img.link}")
+
+    return Response( "", status.HTTP_200_OK)
+
+    
+
 
 
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def updateBrand(request):
-    data = json.loads(request.body).get("body")
+    data = request.POST
     print(data)
-    brand  = Brand.objects.get(id=data.get("id"))
+    brand  = Brand.objects.select_related("img").get(id=data.get("id"))
     print(brand)
-    brand.name = data.get("name")
-    brand.slug = data.get("slug")
+    brand.name = data.get("brand_name")
+    image_link = brand.img.link
+    print(image_link)
 
     brand.save()
 
+    image = request.FILES.get("image")
+    if image is not None:
+        handle_uploaded_file(image , f"./media/brand/{image_link}")
+
     return Response( "" , status = status.HTTP_200_OK)
+
+
+
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def loadProductData(request):
+    print(request.body)
+    data = json.loads(request.body).get('data')
+    print("the data is ", data)
+    product_data = Product.objects.select_related('brand_id', 'category_id').filter(id = data.get("id")).values("id", "name", "slug", "features", "brand_id__name", "category_id__name")
+    print(product_data)
+
+    related_products = []
+
+    responseData = {
+        'product_data': product_data , 
+        'related_products': related_products
+    }
+    
+
+    return Response(  responseData , status = status.HTTP_200_OK)
