@@ -20,16 +20,16 @@ def postMessage(request):
     data={
         "name": name,
         "email": email,
-        "phno": phno,
+        "ph_no": phno,
         "subject": subject,
-        "message": message,
+        "msg": message,
         "timestamp": datetime.datetime.now(),
         "answered": False
     }
 
     query_serializer=QuerySerializer(data=data)
     if not query_serializer.is_valid():
-        return Response("Image not found", status=status.HTTP_400_BAD_REQUEST)
+        return Response("Something Wrong",query_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     query_serializer.save()
     return Response({'message': 'Message posted successfully'}, status=status.HTTP_201_CREATED)
