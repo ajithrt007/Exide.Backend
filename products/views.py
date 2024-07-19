@@ -316,7 +316,8 @@ def loadHomePage(request):
 
         img_location=os.path.join(settings.MEDIA_ROOT,"banners",img_name[0]['link'])
         if os.path.exists(img_location):
-            img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"banners/"+img_name[0]['link'])
+            # img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"banners/"+img_name[0]['link'])
+            img_path=request.build_absolute_uri(settings.MEDIA_URL+"banners/"+img_name[0]['link'])
         else:
             img_path=""
         result = {
@@ -333,7 +334,8 @@ def loadHomePage(request):
         img_location=os.path.join(settings.MEDIA_ROOT,"brand",img_name[0]['link'])
 
         if os.path.exists(img_location):
-            img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"brand/"+img_name[0]['link'])
+            # img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"brand/"+img_name[0]['link'])
+            img_path=request.build_absolute_uri(settings.MEDIA_URL+"brand/"+img_name[0]['link'])
         else:
             img_path=""
 
@@ -355,7 +357,8 @@ def loadHomePage(request):
             img_location=os.path.join(settings.MEDIA_ROOT,"products",img_name[0]['link'])
 
             if os.path.exists(img_location):
-                img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"products/"+img_name[0]['link'])
+                # img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"products/"+img_name[0]['link'])
+                img_path=request.build_absolute_uri(settings.MEDIA_URL+"products/"+img_name[0]['link'])
             else:
                 img_path=""
 
@@ -506,7 +509,7 @@ def loadProductData(request):
     print(request.body)
     data = json.loads(request.body).get('data')
     print("the data is ", data)
-    product_data = Product.objects.select_related('brand_id', 'category_id').filter(id = data.get("id")).values("id", "name", "slug", "features", "brand_id__name", "category_id__name")
+    product_data = Product.objects.select_related('brand_id', 'category_id').filter(slug = data.get("slug")).values("id", "name", "slug", "features", "brand_id__name", "category_id__name")
     print(product_data)
 
     related_products = []
