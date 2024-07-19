@@ -316,7 +316,7 @@ def loadHomePage(request):
 
         img_location=os.path.join(settings.MEDIA_ROOT,"banners",img_name[0]['link'])
         if os.path.exists(img_location):
-            img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"banners/"+img_name[0]['link'])
+            img_path=request.build_absolute_uri(settings.MEDIA_URL+"banners/"+img_name[0]['link'])
         else:
             img_path=""
         result = {
@@ -333,7 +333,7 @@ def loadHomePage(request):
         img_location=os.path.join(settings.MEDIA_ROOT,"brand",img_name[0]['link'])
 
         if os.path.exists(img_location):
-            img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"brand/"+img_name[0]['link'])
+            img_path=request.build_absolute_uri(settings.MEDIA_URL+"brand/"+img_name[0]['link'])
         else:
             img_path=""
 
@@ -355,7 +355,7 @@ def loadHomePage(request):
             img_location=os.path.join(settings.MEDIA_ROOT,"products",img_name[0]['link'])
 
             if os.path.exists(img_location):
-                img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"products/"+img_name[0]['link'])
+                img_path=request.build_absolute_uri(settings.MEDIA_URL+"products/"+img_name[0]['link'])
             else:
                 img_path=""
 
