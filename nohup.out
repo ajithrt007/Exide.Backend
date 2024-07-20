@@ -1,0 +1,9 @@
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+July 19, 2024 - 18:17:50
+Django version 5.0.6, using settings 'core.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+

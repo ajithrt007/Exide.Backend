@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-)0zq(m%sfr-m5%65s7-d&_d5ll0!-uorqzk@15%2aa!xoltn-8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["exidesafety.xyz", "server.exidesafety.xyz","exide-frontend-weld.vercel.app" , "localhost"]
 
 
 # Application definition
@@ -163,3 +163,10 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+if DEBUG:
+    SECURE_SSL_REDIRECT = False
+else:
+    SECURE_SSL_REDIRECT = True

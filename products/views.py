@@ -386,7 +386,7 @@ def getAllProducts(requesst):
     products  = Product.objects.select_related("image_id").all().values()
    
     catogories = Category.objects.select_related("img")
-    banners = Banner.objects.select_related("img__link").values("id", "product_id", "product_id__name", "img_id" , "img_id__link")
+    banners = Banner.objects.select_related("img__link", "category_id", "brand_id").values("id", "product_id", "product_id__name" , "img_id" , "img_id__link")
     for item in catogories:
         print(item)
     print(catogories)
@@ -509,11 +509,15 @@ def loadProductData(request):
     print(request.body)
     data = json.loads(request.body).get('data')
     print("the data is ", data)
-    product_data = Product.objects.select_related('brand_id', 'category_id').filter(slug = data.get("slug")).values("id", "name", "slug", "features", "brand_id__name", "category_id__name")
+    product_data = Product.objects.select_related('brand_id', 'category_id').filter(slug = data.get("slug")).values("id", "name", "slug", "features", "brand_id__name", "category_id__name", "category_id")
     print(product_data)
 
-    related_products = []
+    product_category_id = product_data[0]["category_id"]
 
+    print(product_category_id)
+
+    related_products = Product.objects.filter(category_id = product_category_id).values()
+    print(related_products)
     responseData = {
         'product_data': product_data , 
         'related_products': related_products
