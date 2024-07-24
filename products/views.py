@@ -410,10 +410,11 @@ def getAllProducts(requesst):
 # @permission_classes([IsAuthenticated])
 def updateProducts(request):
     data = request.POST
-    print(data)
+    print("the data came in is", data)
     print(request.FILES)
-    print(type(data))
-    product  = Product.objects.get(id=int(data.get("id")[0]))
+    print(data.get("id"))
+    product  = Product.objects.get(id=data.get("id"))
+    print("the product to be edited is", product.id, product.name)
     print(product)
     product.name = data.get("product_name")
     # product.slug = data.get("product_slug")
