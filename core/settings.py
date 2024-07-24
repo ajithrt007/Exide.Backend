@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-)0zq(m%sfr-m5%65s7-d&_d5ll0!-uorqzk@15%2aa!xoltn-8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["exidesafety.xyz", "server.exidesafety.xyz","exide-frontend-weld.vercel.app" , "localhost"]
+ALLOWED_HOSTS = ["exidesafety.org", "server.exidesafety.org","exide-frontend-weld.vercel.app" , "localhost"]
 
 
 # Application definition
