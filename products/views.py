@@ -384,16 +384,43 @@ def loadHomePage(request):
 # @permission_classes([IsAuthenticated])
 def getAllProducts(requesst):
     products  = Product.objects.select_related("image_id").all().values()
+
+    search = requesst.POST.get("query")
+    print("the serach is ", search)
+
+    
    
     catogories = Category.objects.select_related("img")
     banners = Banner.objects.select_related("img__link", "category_id", "brand_id").values("id", "product_id", "product_id__name" , "img_id" , "img_id__link")
-    for item in catogories:
-        print(item)
-    print(catogories)
+   
+    # print(catogories)
     catogories = Category.objects.select_related("img").values("id", "name", "img", "img__link")
-    print(catogories)
+    # print(catogories)
     brands = Brand.objects.select_related("img_id").all().values("id","slug", "name", "img_id" , "img_id__link")
-    print(type(products))
+    # print(type(products))
+
+    if search is not None:
+        print("here")
+        filtered_products = []
+        search_keywords = search.split(" ")
+        for item in products:
+            name = item.get("name").lower()
+            count = 0
+            # print(name)
+            for word in search_keywords:
+                if word.lower() in name:
+                    count+=1
+            if count > 0:
+                new_item = item 
+                new_item['search_count']=  count
+                filtered_products.append(item)
+        # filtered_products = filtered_products.sort(key = lambda x:x['search_count'])
+        filtered_products = sorted( filtered_products  ,key = lambda x:x['search_count'] )
+        print(len(filtered_products))
+
+        products = filtered_products
+
+        
     
     data = {
         "products": list(products),
