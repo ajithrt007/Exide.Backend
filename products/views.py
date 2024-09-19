@@ -444,6 +444,7 @@ def updateProducts(request):
     print("the product to be edited is", product.id, product.name)
     print(product)
     product.name = data.get("product_name")
+    
     # product.slug = data.get("product_slug")
     product.features = data.get("product_features")
     product.brand_id = int(data.get("brand_id"))
@@ -453,9 +454,16 @@ def updateProducts(request):
 
     
     image = request.FILES.get("image")
+    datasheet = request.FILES.get("product_datasheet")
     if image is not None:
         print("chaning image")
         handle_uploaded_file(image , f"./media/products/{product.slug}_0.png")
+    if datasheet is not None:
+        datasheet_current = Product.objects.filter(id = product.id).values("datasheet__id", "datasheet__link")[0]
+        handle_uploaded_file(datasheet , f"./media/datasheets/{datasheet_current.get("datasheet__link")}")
+        print(datasheet_current)
+        print("chanding datasheet")
+
         
     
 
@@ -506,10 +514,6 @@ def updateBanners(request):
 
     return Response( "", status.HTTP_200_OK)
 
-    
-
-
-
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def updateBrand(request):
@@ -528,8 +532,6 @@ def updateBrand(request):
         handle_uploaded_file(image , f"./media/brand/{image_link}")
 
     return Response( "" , status = status.HTTP_200_OK)
-
-
 
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
@@ -552,4 +554,16 @@ def loadProductData(request):
     }
     
 
+
+
     return Response(  responseData , status = status.HTTP_200_OK)
+
+@api_view(['POST'])
+def deleteProduct(request):
+    data = request.POST
+    print(data)
+    productId = data.get('id')
+    # Product.delete()
+    product = Product.objects.get(id = productId)
+    product.delete()
+    return Response( "", status = status.HTTP_200_OK)
