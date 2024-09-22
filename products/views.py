@@ -460,7 +460,7 @@ def updateProducts(request):
         handle_uploaded_file(image , f"./media/products/{product.slug}_0.png")
     if datasheet is not None:
         datasheet_current = Product.objects.filter(id = product.id).values("datasheet__id", "datasheet__link")[0]
-        handle_uploaded_file(datasheet , f"./media/datasheets/{datasheet_current.get("datasheet__link")}")
+        handle_uploaded_file(datasheet , f"./media/datasheets/{datasheet_current.get('datasheet__link')}")
         print(datasheet_current)
         print("chanding datasheet")
 
