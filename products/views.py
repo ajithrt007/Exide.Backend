@@ -324,10 +324,20 @@ def loadHomePage(request):
             img_path=request.build_absolute_uri(settings.MEDIA_URL+"banners/"+img_name[0]['link'])
         else:
             img_path=""
-        result = {
-            "img_path":img_path,
-            "linked_product_slug": slug[0]['slug']
-        }
+        # result = {
+        #     "img_path":img_path,
+        #     "linked_product_slug": slug[0]['slug']
+        # }
+        if slug:  # Check if the slug is not None
+            result = {
+                "img_path": img_path,
+                "linked_product_slug": slug[0]['slug']
+            }
+        else:
+            result = {
+                "img_path": img_path,
+                "linked_product_slug": None
+            }
         banner_results.append(result)
 
     brands=list(Brand.objects.all())
