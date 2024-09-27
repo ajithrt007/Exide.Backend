@@ -311,7 +311,11 @@ def loadHomePage(request):
     banner_results=[]
 
     for item in banners:
-        slug=list(Product.objects.filter(id=item.product.id).values('slug'))
+        if item.product is not None:
+            slug = list(Product.objects.filter(id=item.product.id).values('slug'))
+        else:
+            slug = None
+        #slug=list(Product.objects.filter(id=item.product.id).values('slug'))
         img_name=list(Image.objects.filter(id=item.img.id).values('link'))
 
         img_location=os.path.join(settings.MEDIA_ROOT,"banners",img_name[0]['link'])
