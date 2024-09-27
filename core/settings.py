@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-)0zq(m%sfr-m5%65s7-d&_d5ll0!-uorqzk@15%2aa!xoltn-8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["exidesafety.org", "server.exidesafety.org","exide-frontend-weld.vercel.app" , "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["exidesafety.org", "server.exidesafety.org","exide-frontend-weld.vercel.app" , "localhost", "127.0.0.1", "www.exidesafety.org"]
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -44,7 +45,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -115,7 +115,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://www.exidesafety.org",
+    "https://exidesafety.org",
+    "https://server.exidesafety.org",
+    "https://exide-frontend-weld.vercel.app",
+]
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
