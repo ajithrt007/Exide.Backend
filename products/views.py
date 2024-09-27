@@ -307,79 +307,77 @@ def getProductsAll(request):
 
 @api_view(['GET'])
 def loadHomePage(request):
-    banners = list(Banner.objects.all())
-    banner_results = []
+    banners=list(Banner.objects.all())
+    banner_results=[]
 
     for item in banners:
-        # Safely handle product slug
-        slug = None
-        if item.product is not None:
-            product = Product.objects.filter(id=item.product.id).values('slug')
-            if product.exists():
-                slug = product[0]['slug']
+        slug=list(Product.objects.filter(id=item.product.id).values('slug'))
+        img_name=list(Image.objects.filter(id=item.img.id).values('link'))
 
-        # Safely handle image name
-        img_name = Image.objects.filter(id=item.img.id).values('link').first()
-        img_path = ""
-        if img_name:
-            img_location = os.path.join(settings.MEDIA_ROOT, "banners", img_name['link'])
-            if os.path.exists(img_location):
-                img_path = request.build_absolute_uri(settings.MEDIA_URL + "banners/" + img_name['link'])
-
+        img_location=os.path.join(settings.MEDIA_ROOT,"banners",img_name[0]['link'])
+        if os.path.exists(img_location):
+            # img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"banners/"+img_name[0]['link'])
+            img_path=request.build_absolute_uri(settings.MEDIA_URL+"banners/"+img_name[0]['link'])
+        else:
+            img_path=""
         result = {
-            "img_path": img_path,
-            "linked_product_slug": slug  # Return None if slug not found
+            "img_path":img_path,
+            "linked_product_slug": slug[0]['slug']
         }
         banner_results.append(result)
 
-    brands = list(Brand.objects.all())
-    brand_results = []
+    brands=list(Brand.objects.all())
+    brand_results=[]
 
     for item in brands:
-        img_name = Image.objects.filter(id=item.img.id).values('link').first()
-        img_path = ""
-        if img_name:
-            img_location = os.path.join(settings.MEDIA_ROOT, "brand", img_name['link'])
-            if os.path.exists(img_location):
-                img_path = request.build_absolute_uri(settings.MEDIA_URL + "brand/" + img_name['link'])
+        img_name=list(Image.objects.filter(id=item.img.id).values('link'))
+        img_location=os.path.join(settings.MEDIA_ROOT,"brand",img_name[0]['link'])
 
-        result = {
+        if os.path.exists(img_location):
+            # img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"brand/"+img_name[0]['link'])
+            img_path=request.build_absolute_uri(settings.MEDIA_URL+"brand/"+img_name[0]['link'])
+        else:
+            img_path=""
+
+        result={
             "name": item.name,
             "img_path": img_path,
         }
         brand_results.append(result)
 
-    products = list(Product.objects.filter(top_featured=True).values('slug', 'name', 'id'))
-    product_results = []
+    products=list(Product.objects.filter(top_featured=True).values('slug','name','id'))
+    product_results=[]
 
     for item in products:
-        img_ids = list(ProductImage.objects.filter(product=item['id']).values('img'))
-        image_names = []
+        img_ids=list(ProductImage.objects.filter(product=item['id']).values('img'))
+        image_names=[]
 
         for img_id in img_ids:
-            img_name = Image.objects.filter(id=img_id['img']).values('link').first()
-            img_path = ""
-            if img_name:
-                img_location = os.path.join(settings.MEDIA_ROOT, "products", img_name['link'])
-                if os.path.exists(img_location):
-                    img_path = request.build_absolute_uri(settings.MEDIA_URL + "products/" + img_name['link'])
+            img_name=list(Image.objects.filter(id=img_id['img']).values('link'))
+            img_location=os.path.join(settings.MEDIA_ROOT,"products",img_name[0]['link'])
+
+            if os.path.exists(img_location):
+                # img_path=request.build_absolute_uri(request.get_host()+settings.MEDIA_URL+"products/"+img_name[0]['link'])
+                img_path=request.build_absolute_uri(settings.MEDIA_URL+"products/"+img_name[0]['link'])
+            else:
+                img_path=""
+
             image_names.append(img_path)
 
-        result = {
+        result={
             "name": item['name'],
             "slug": item['slug'],
             "img_paths": image_names,
         }
         product_results.append(result)
-
-    results = {
+        
+    results={
         "banners": banner_results,
         "brands": brand_results,
         "products": product_results
     }
 
     return Response(results, status=status.HTTP_200_OK)
-
 
 
 @api_view(['POST'])
