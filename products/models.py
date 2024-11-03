@@ -20,6 +20,7 @@ class Product(models.Model):
     slug = AutoSlugField(populate_from=['name'],max_length=30)
     brand=models.ForeignKey(Brand,on_delete=models.CASCADE)
     features=models.CharField(max_length=1500)
+    description = models.CharField(max_length=1500, default="")
     name = models.CharField(max_length=150)
     category=models.ForeignKey(Category,on_delete=models.CASCADE)
     quantity=models.IntegerField()

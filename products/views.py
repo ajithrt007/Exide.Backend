@@ -449,6 +449,8 @@ def updateProducts(request):
     product.features = data.get("product_features")
     product.brand_id = int(data.get("brand_id"))
     product.category_id = int(data.get("category_id"))
+    product.quantity = data.get("product_quantity")
+    product.description = data.get("product_description")
 
     product.save()
 
@@ -539,7 +541,7 @@ def loadProductData(request):
     print(request.body)
     data = json.loads(request.body).get('data')
     print("the data is ", data)
-    product_data = Product.objects.select_related('brand_id', 'category_id', 'datasheet_id').filter(slug = data.get("slug")).values("id", "name", "slug", "features", "brand_id__name", "category_id__name","datasheet_id__link",  "category_id")
+    product_data = Product.objects.select_related('brand_id', 'category_id', 'datasheet_id').filter(slug = data.get("slug")).values("id", "name", "slug", "features", "brand_id__name", "category_id__name","datasheet_id__link",  "category_id", "quantity", "description")
     print(product_data)
 
     product_category_id = product_data[0]["category_id"]
