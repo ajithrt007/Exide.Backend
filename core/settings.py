@@ -121,7 +121,10 @@ CORS_ALLOWED_ORIGINS = [
     "https://exidesafety.org",
     "https://server.exidesafety.org",
     "https://exide-frontend-weld.vercel.app",
+    "http://localhost:3000"
 ]
+
+CORS_ALLOW_HEADERS = ['*']
 
 
 REST_FRAMEWORK = {

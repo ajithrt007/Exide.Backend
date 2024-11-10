@@ -463,7 +463,11 @@ def updateProducts(request):
     product.features = data.get("product_features")
     product.brand_id = int(data.get("brand_id"))
     product.category_id = int(data.get("category_id"))
-    product.quantity = data.get("product_quantity")
+    quantity = data.get("product_quantity")
+    if quantity is None:
+        product.quantity = 0
+    else:
+        product.quantity = 1
     product.description = data.get("product_description")
 
     product.save()
