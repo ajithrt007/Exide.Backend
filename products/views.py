@@ -107,8 +107,10 @@ def addBrand(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def addProduct(request):
+    print("here")
     product_name=request.data.get('product_name')
     product_features=request.data.get('product_features')
+    product_description = request.data.get("product_description")
     quantity=int(request.data.get('product_quantity'))
     top_featured= True if request.data.get('top_featured') == 'true' else False
     category_id=int(request.data.get('product_category_id'))
@@ -148,7 +150,8 @@ def addProduct(request):
         "category": category_id,
         "quantity": quantity,
         "top_featured": top_featured,
-        "datasheet": datasheet_id
+        "datasheet": datasheet_id,
+        "description": product_description
     }
 
     product_serialzier=ProductSerializer(data=product_data)
