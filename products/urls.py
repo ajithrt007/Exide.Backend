@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import addCategory, addBrand, getBrands, getCategories, deleteProduct, addProduct, getProductsNames, loadProductData ,updateBanners,  addBanner, loadHomePage , updateBrand , updateCategories ,  updateProducts ,getAllProducts
+from .views import addCategory, addBrand, getBrands, getCategories, deleteBanner , deleteCategory , deleteBrand, deleteProduct, addProduct, getProductsNames, loadProductData ,updateBanners,  addBanner, loadHomePage , updateBrand , updateCategories ,  updateProducts ,getAllProducts
 
 urlpatterns =[
     path('addCategory/',addCategory,name='add_category'),
@@ -18,4 +18,8 @@ urlpatterns =[
     path('loadProductData/',loadProductData,name="loadProductData"),
     path('loadProductData/',loadProductData,name="loadProductData"),
     path('deleteProduct/',deleteProduct,name="deleteProduct"),
+     path('deleteProduct/', deleteProduct, name='delete_product'),
+    path('deleteBrand/', deleteBrand, name='delete_brand'),
+    path('deleteCategory/', deleteCategory, name='delete_category'),
+    path('deleteBanner/', deleteBanner, name='delete_banner'),
 ]

@@ -75,8 +75,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'exidesaftey_db',
-        'USER': 'exidesaftey_user',
-        'PASSWORD': 'exidesaftey_user_password',
+        'USER': 'root',
+        'PASSWORD': '8411',
         'HOST': 'localhost',
         'PORT': '3306',
     }

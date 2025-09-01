@@ -77,6 +77,7 @@ def addBrand(request):
     if not os.path.exists(brand_dir):
         os.makedirs(brand_dir)
 
+
     filtered_brand_name=custom_slugify(brand_name)
     image_name='_'.join(filtered_brand_name.split(' ')) + '.' + image.name.split('.')[-1]
 
@@ -590,3 +591,55 @@ def deleteProduct(request):
     product = Product.objects.get(id = productId)
     product.delete()
     return Response( "", status = status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def deleteProduct(request):
+    data = request.POST
+    print(data)
+    productId = data.get('id')
+    product = Product.objects.get(id=productId)
+    product.delete()
+    return Response("", status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def deleteBrand(request):
+    data = request.POST
+    print(data)
+    brandId = data.get('id')
+    try:
+        brand = Brand.objects.get(id=brandId)
+        brand.delete()
+        return Response("Brand deleted successfully", status=status.HTTP_200_OK)
+    except Brand.DoesNotExist:
+        return Response("Brand not found", status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response(f"Error deleting brand: {str(e)}", status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def deleteCategory(request):
+    data = request.POST
+    print(data)
+    categoryId = data.get('id')
+    try:
+        category = Category.objects.get(id=categoryId)
+        category.delete()
+        return Response("Category deleted successfully", status=status.HTTP_200_OK)
+    except Category.DoesNotExist:
+        return Response("Category not found", status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response(f"Error deleting category: {str(e)}", status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def deleteBanner(request):
+    data = request.POST
+    print(data)
+    bannerId = data.get('id')
+    try:
+        banner = Banner.objects.get(id=bannerId)
+        banner.delete()
+        return Response("Banner deleted successfully", status=status.HTTP_200_OK)
+    except Banner.DoesNotExist:
+        return Response("Banner not found", status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response(f"Error deleting banner: {str(e)}", status=status.HTTP_400_BAD_REQUEST)
